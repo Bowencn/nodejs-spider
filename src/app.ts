@@ -1,7 +1,7 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-02 11:12:19
- * @LastEditTime: 2021-06-04 16:30:53
+ * @LastEditTime: 2021-06-04 16:53:43
  * @LastEditors: bowen
  * @Description: 入口文件
  * @FilePath: \demoExpress\src\app.ts
@@ -13,6 +13,7 @@ const gbk = require('gbk');
 const app: express.Application = express();
 const port = 9090;
 const cheerio = require('cheerio');
+const utils = require('./utils/utils')
 // const iconv = require('iconv-lite');
 let page: string = '1';
 const fs = require('fs');
@@ -50,7 +51,6 @@ function crawlerChapter(html) {
   console.log('加载完成');
   getImageDetails(arr);
 }
-
 async function getImageDetails(arr: any[]) {
   // console.log(arr);
   console.log(`地址获取开始，本次任务共计${arr.length}项`);
@@ -152,133 +152,140 @@ async function getImageDetails(arr: any[]) {
 
 let downList = [];
 let timeoutList = [];
-
+let allList = []
 const getImageSourceData = (picUrl, name, srcName) => {
-  https
-    .get(
-      picUrl,{timeout: 3000},
-      function (res: {
-        setEncoding: (arg0: string) => void;
-        on: (arg0: string, arg1: { (chunk: any): void; (): void }) => void;
-      }) {
-        // console.log('-------', i, '-----------');
-        res.setEncoding('binary');
-        // console.time('下载');
-        let str = '';
-        res.on('data', function (chunk: string) {
-          str += chunk;
-        });
-        res.on('end', async function () {
-          downList.push(str);
-          console.log(downList.length);
-          // console.log('net - success');
-          // fs.access(`./output/images/${srcName}`, fs.constants.F_OK, (err) => {
-          //   if (err) {
-          //     console.log(err);
-          //     if (err.code === 'ENOENT') {
-          //       console.log(err);
-          //       fs.mkdir(
-          //         `./output/images/${srcName}`,
-          //         { recursive: true },
-          //         (err) => {
-          //           if (err) throw err;
-          //         }
-          //       );
-          //     }
-          //   }
-          // });
-          // console.timeEnd('下载');
-          // fs.writeFile(
-          //   `./output/images/${srcName}/${name}.png`,
-          //   str,
-          //   'binary',
-          //   (err) => {
-          //     if (!err) {
-          //     } else {
-          //     }
-          //   }
-          // );
-        });
-      }
-    )
-    .on('error', (e) => {
-      console.error(e);
-    })
-    .on('timeout', () => {
-      console.log('timeout', picUrl);
-      timeoutList.push(picUrl);
-    });
+  return new Promise((resolve, reject) =>
+    https
+      .get(
+        picUrl,
+        { timeout: 3000 },
+        function (res: {
+          setEncoding: (arg0: string) => void;
+          on: (arg0: string, arg1: { (chunk: any): void; (): void }) => void;
+        }) {
+          // console.log('-------', i, '-----------');
+          res.setEncoding('binary');
+          // console.time('下载');
+          let str = '';
+          res.on('data', function (chunk: string) {
+            str += chunk;
+          });
+          res.on('end', async function () {
+            // downList.push(str);
+            resolve(name);
+            console.log(name);
+            // console.log('net - success');
+            // fs.access(`./output/images/${srcName}`, fs.constants.F_OK, (err) => {
+            //   if (err) {
+            //     console.log(err);
+            //     if (err.code === 'ENOENT') {
+            //       console.log(err);
+            //       fs.mkdir(
+            //         `./output/images/${srcName}`,
+            //         { recursive: true },
+            //         (err) => {
+            //           if (err) throw err;
+            //         }
+            //       );
+            //     }
+            //   }
+            // });
+            // console.timeEnd('下载');
+            // fs.writeFile(
+            //   `./output/images/${srcName}/${name}.png`,
+            //   str,
+            //   'binary',
+            //   (err) => {
+            //     if (!err) {
+            //     } else {
+            //     }
+            //   }
+            // );
+          });
+        }
+      )
+      .on('error', (e) => {
+        console.error(e);
+      })
+      .on('timeout', () => {
+        // console.log('timeout', name);
+        reject(name);
+        // timeoutList.push(picUrl);
+      })
+  );
 };
-async function downloadImage(allFilms: string | any[], srcName) {
+
+
+function downloadImage(allFilms: string | any[], srcName) {
+  downList = [];
   // return new Promise(async (reslove, reject) => {
+
+  // let index = 1;
+  // async function main() {
+  //   const picUrl = allFilms[index];
+  //   if (index <= allFilms.length) {
+  //     try {
+  //       const res = await getImageSourceData(picUrl, index, srcName);
+  //       console.log('success:' + res);
+  //       index++;
+  //       main()
+  //     } catch (error) {
+  //       console.log('timeout:' + error);
+  //     }
+  //   }
+  //   if (index === allFilms.length) {
+  //     console.log('all success');
+  //   }
+  // }
+  // main();
   for (let i = 0; i < allFilms.length; i++) {
     const picUrl = allFilms[i];
     const name = allFilms[i].title || i;
-    downList = []
-    getImageSourceData(picUrl, name, srcName);
     // console.log(picUrl, name, srcName);
     // const res = await getImageSourceData(picUrl, name, srcName);
-    // console.log(res);
-    // 请求 -> 拿到内容
-    // fs.writeFile('./xx.png','内容')
-    // https
-    //   .get(
-    //     picUrl,
-    //     {timeout: 3000},
-    //     function (res: {
-    //       setEncoding: (arg0: string) => void;
-    //       on: (arg0: string, arg1: { (chunk: any): void; (): void }) => void;
-    //     }) {
-    //       // console.log('-------', i, '-----------');
-    //       res.setEncoding('binary');
-    //       let str = '';
-    //       res.on('data', function (chunk: string) {
-    //         str += chunk;
-    //       });
+    https
+      .get(
+        picUrl,
+        { timeout: 3000 },
+        function (res: {
+          setEncoding: (arg0: string) => void;
+          on: (arg0: string, arg1: { (chunk: any): void; (): void }) => void;
+        }) {
+          // console.log('-------', i, '-----------');
+          res.setEncoding('binary');
+          let str = '';
+          res.on('data', function (chunk: string) {
+            str += chunk;
+          });
 
-    //       res.on('end', async function () {
-    //         downList.push(str);
-    //         console.log(downList.length);
-    //         // 创建文件夹
-    //         // fs.access(`./output/images/${srcName}`, fs.constants.F_OK, (err) => {
-    //         //   if (err) {
-    //         //     console.log(err);
-    //         //     if (err.code === 'ENOENT') {
-    //         //       console.log(err);
-    //         //       fs.mkdir(
-    //         //         `./output/images/${srcName}`,
-    //         //         { recursive: true },
-    //         //         (err) => {
-    //         //           if (err) throw err;
-    //         //         }
-    //         //       );
-    //         //     }
-    //         //   }
-    //         // });
-    //         // const error = fs.writeFileSync(
-    //         //   `./output/images/${srcName}/${name}.png`,
-    //         //   str,
-    //         //   'binary'
-    //         // );
-    //         // if (!error) {
-    //         //   downList.push(name);
-    //         //   console.log(name);
-    //         // } else {
-    //         //   console.warn(name + '下载失败');
-    //         //   errorDownList.push(name);
-    //         //   console.log(errorDownList);
-    //         // }
-    //       });
-    //     }
-    //   )
-    //   .on('error', (e) => {
-    //     console.error(e);
-    //   }).on('timeout',()=>{
-    //     console.log('timeout',i,picUrl)
-    //     timeoutList.push(picUrl)
-    //   });
+          res.on('end', async function () {
+            downList.push(str);
+            allList.push(i)
+            // console.log(downList.length);
 
-    // console.log('完成');
+            const error = fs.writeFileSync(
+              `./output/images/${srcName}/${name}.png`,
+              str,
+              'binary'
+            );
+            if (!error) {
+              console.log(name + '下载成功');
+              console.log('fs:'+allList.length===24)
+            } else {
+              console.warn(name + '下载失败');
+            }
+          });
+        }
+      )
+      .on('error', (e) => {
+        console.error(e);
+      })
+      .on('timeout', () => {
+        console.log('timeout', i, picUrl);
+        timeoutList.push(picUrl);
+        allList.push(i)
+        console.log('timeout:'+allList.length===24)
+      });
   }
 }
 app.get('/get', (req, res) => {
@@ -293,7 +300,7 @@ app.get('/get', (req, res) => {
   });
   res.send('ok');
 });
-
+downloadImage(require(`../output/wallpaper7.json`), 7);
 app.get('/down', (req, res) => {
   const pageJson = require(`../output/wallpaper.json`);
   let initPageNumber = 7;
