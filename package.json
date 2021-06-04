@@ -1,0 +1,24 @@
+{
+  "name": "demoexpress",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.ts",
+  "scripts": {
+    "tsc": "npx tsc",
+    "dev": "ts-node-dev --respawn --transpile-only ./src/app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "^4.17.12",
+    "cheerio": "^1.0.0-rc.9",
+    "express": "^4.17.1",
+    "gbk": "^0.1.0",
+    "iconv-lite": "^0.6.3",
+    "typescript": "^4.3.2"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.1.6"
+  }
+}
