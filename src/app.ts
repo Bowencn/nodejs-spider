@@ -1,7 +1,8 @@
+
 /*
  * @Author: bowen
  * @Date: 2021-06-02 11:12:19
- * @LastEditTime: 2021-06-04 16:53:43
+ * @LastEditTime: 2021-06-04 17:26:13
  * @LastEditors: bowen
  * @Description: 入口文件
  * @FilePath: \demoExpress\src\app.ts
@@ -14,6 +15,7 @@ const app: express.Application = express();
 const port = 9090;
 const cheerio = require('cheerio');
 const utils = require('./utils/utils')
+const getImageInfo = require('./components/get/main')
 // const iconv = require('iconv-lite');
 let page: string = '1';
 const fs = require('fs');
@@ -300,7 +302,9 @@ app.get('/get', (req, res) => {
   });
   res.send('ok');
 });
-downloadImage(require(`../output/wallpaper7.json`), 7);
+console.log(getImageInfo)
+// getImageInfo('https://wallhaven.cc/toplist?page=22')
+// downloadImage(require(`../output/wallpaper7.json`), 7);
 app.get('/down', (req, res) => {
   const pageJson = require(`../output/wallpaper.json`);
   let initPageNumber = 7;
