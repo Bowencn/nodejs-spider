@@ -1,7 +1,7 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-04 16:47:36
- * @LastEditTime: 2021-06-04 16:49:16
+ * @LastEditTime: 2021-06-07 11:09:34
  * @LastEditors: bowen
  * @Description: 工具
  * @FilePath: \demoExpress\src\utils\utils.ts
@@ -11,28 +11,58 @@
 const fs = require('fs');
 
 /**
- * @description: 检测output/images/ 文件夹下是否有文件夹 没有则创建
+ * @description: 创建文件夹
  * @param {string} dirName 文件夹名称
  * @return {*}
  */
-function mkdir(dirName: string) {
+function mkdir(dirName: string, path = 'images') {
   // 创建文件夹
+  console.log('dirname', dirName);
   fs.access(
-    `./output/images/${dirName}`,
+    `./output/${path}/${dirName.toString()}`,
     fs.constants.F_OK,
     (err: { code: string }) => {
       if (err) {
         if (err.code === 'ENOENT') {
+          console.log('文件夹： ' + dirName + ' 不存在，正在创建文件夹');
           fs.mkdir(
-            `./output/images/${dirName}`,
+            `./output/${path}/${dirName.toString()}`,
             { recursive: true },
             (err: any) => {
               if (err) throw err;
+              console.log('文件夹 ' + dirName + ' 创建成功');
             }
           );
         }
+      } else {
+        console.log('文件夹 ' + dirName + ' 已存在');
       }
     }
   );
 }
-export default { mkdir };
+/**
+ * @description: 检测文件夹
+ * @param {string} dirName
+ * @return {*}
+ */
+// function access(dirName: string) {
+//   // 创建文件夹
+//   fs.access(
+//     `./output/images/${dirName}`,
+//     fs.constants.F_OK,
+//     (err: { code: string }) => {
+//       if (err) {
+//         if (err.code === 'ENOENT') {
+//           fs.mkdir(
+//             `./output/images/${dirName}`,
+//             { recursive: true },
+//             (err: any) => {
+//               if (err) throw err;
+//             }
+//           );
+//         }
+//       }
+//     }
+//   );
+// }
+module.exports = { mkdir };
