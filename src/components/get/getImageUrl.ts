@@ -1,21 +1,26 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-04 17:09:00
- * @LastEditTime: 2021-06-07 11:25:29
+ * @LastEditTime: 2021-07-08 13:50:15
  * @LastEditors: bowen
  * @Description: 获取图片地址
  * @FilePath: \demoExpress\src\components\get\getImageUrl.ts
  * (#^.^#)
  */
 
-module.exports = async function main(arr: string[], page: string) {
+module.exports = async function main(
+  arr: string[],
+  page: string,
+  callback: Function
+) {
   const fs = require('fs');
   const https = require('https');
   const cheerio = require('cheerio');
   const utils = require('../../utils/utils');
-  const today = new Date().toLocaleDateString()
+  const today = new Date().toLocaleDateString();
   console.log('file:getImageUrl ', arr);
   console.log(`地址获取开始，本次任务共计${arr.length}项`);
+  let isOver = false;
   let i = 0;
   let list: any[] = [];
   const getUrl = (url: string) =>
@@ -39,14 +44,14 @@ module.exports = async function main(arr: string[], page: string) {
           console.error(e);
         })
         .on('timeout', () => {
-            reject();
+          reject();
           console.log('timeout', url);
         })
     );
   async function begin() {
     if (i === arr.length) {
       console.log(`开始文件写入`);
-      utils.mkdir(new Date().toLocaleDateString(), '');
+      await utils.mkdir(new Date().toLocaleDateString(), '');
       fs.writeFile(
         `./output/${new Date().toLocaleDateString()}/wallpaper${page}.json`,
         JSON.stringify(list),
@@ -56,11 +61,13 @@ module.exports = async function main(arr: string[], page: string) {
           }
         }
       );
+      console.log(`开始更新数据到总目录`);
       const newJson = {
-        id: parseInt(today.replace(/-/g,'')),
+        id: parseInt(today.replace(/-/g, '') + page),
         pageNumber: parseInt(page),
         src: `../output/${today}/wallpaper${page}.json`,
       };
+      console.log(`Data:`, newJson);
       fs.readFile(
         './output/wallpaper.json',
         'utf8',
@@ -82,8 +89,12 @@ module.exports = async function main(arr: string[], page: string) {
               (err: any) => {
                 if (err) throw err;
                 console.log('数据已被更新到文件');
+                callback(page+1);
+                // isOver = true
               }
             );
+          } else {
+            callback(page+1);
           }
         }
       );
@@ -97,6 +108,9 @@ module.exports = async function main(arr: string[], page: string) {
       } catch (error) {
         begin();
       }
+    }
+    if (isOver) {
+      console.log('over');
     }
   }
   await begin();
