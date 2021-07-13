@@ -1,7 +1,7 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-02 11:12:19
- * @LastEditTime: 2021-06-07 11:27:25
+ * @LastEditTime: 2021-07-08 14:20:28
  * @LastEditors: bowen
  * @Description: 入口文件
  * @FilePath: \demoExpress\src\app.ts
@@ -25,7 +25,6 @@ app.get('/', (req, res) => {
 let downList = [];
 let timeoutList = [];
 let allList = [];
-
 function downloadImage(allFilms: string | any[], srcName) {
   downList = [];
   // return new Promise(async (reslove, reject) => {
@@ -103,7 +102,7 @@ app.get('/get', (req, res) => {
   // console.log(req._parsedUrl.query);
   // let src = 'https://wallhaven.cc/toplist?' + req._parsedUrl.query;
   // page = req._parsedUrl.query.split('=')[1];
-  getImageInfo('https://wallhaven.cc/toplist?');
+  getImageInfo('https://wallhaven.cc/toplist?', 6, 8);
   // https.get(src, function (res: any) {
   //   gbk.fetch(src).to('string', function (err: any, string: any) {
   //     if (err) return console.log(err);
@@ -113,7 +112,7 @@ app.get('/get', (req, res) => {
   res.send('ok');
 });
 // utils.mkdir(new Date().toLocaleDateString(),'')
-console.log(new Date().toLocaleDateString().replace(/-/g,''));
+// console.log(new Date().toLocaleDateString().replace(/-/g, ''));
 // getImageInfo('https://wallhaven.cc/toplist?page=22')
 // downloadImage(require(`../output/wallpaper7.json`), 7);
 app.get('/down', (req, res) => {
@@ -151,4 +150,6 @@ app.use(function (req, res, next) {
 });
 app.listen(port, () => {
   console.log('\x1B[31m%s\x1B[0m', `Example app listening on port ${port}!`);
+
+  utils.init();
 });
