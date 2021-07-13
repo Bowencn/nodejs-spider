@@ -1,7 +1,7 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-02 11:12:19
- * @LastEditTime: 2021-07-08 14:20:28
+ * @LastEditTime: 2021-07-13 17:26:55
  * @LastEditors: bowen
  * @Description: 入口文件
  * @FilePath: \demoExpress\src\app.ts
@@ -27,6 +27,8 @@ let timeoutList = [];
 let allList = [];
 function downloadImage(allFilms: string | any[], srcName) {
   downList = [];
+  utils.mkdir(srcName)
+  console.log(allFilms)
   // return new Promise(async (reslove, reject) => {
 
   // let index = 1;
@@ -117,23 +119,57 @@ app.get('/get', (req, res) => {
 // downloadImage(require(`../output/wallpaper7.json`), 7);
 app.get('/down', (req, res) => {
   const pageJson = require(`../output/wallpaper.json`);
-  let initPageNumber = 7;
-  const maxPageNumber = pageJson.length;
-  console.log(initPageNumber, pageJson);
+  /**
+   * @description: 下载状态
+   * @param {string} list 列表下载
+   * @param {string} image 单张图片下载
+   * @param {string} all 全部下载
+   */
+  let downloadState = 'list';
+  let downloadID = 20217137;
+  // let initPageNumber = 7;
+  // const maxPageNumber = pageJson.length;
+  console.log(downloadState, downloadID, pageJson);
   const down = async () => {
-    if (initPageNumber <= maxPageNumber) {
-      const downloadSrc = await require(`${pageJson[initPageNumber].src}`);
-      console.log(downloadSrc);
-      try {
-        const res = await downloadImage(downloadSrc, initPageNumber);
-        console.log(res);
-        // if (res) {
-        //   // initPageNumber += 1;
-        //   down()
-        // }
-      } catch (error) {
-        // down();
-        console.log(error);
+    // if (initPageNumber <= maxPageNumber) {
+    //   const downloadSrc = await require(`${pageJson[initPageNumber].src}`);
+    //   console.log(downloadSrc);
+    //   try {
+    //     const res = await downloadImage(downloadSrc, initPageNumber);
+    //     console.log(res);
+    //     // if (res) {
+    //     //   // initPageNumber += 1;
+    //     //   down()
+    //     // }
+    //   } catch (error) {
+    //     // down();
+    //     console.log(error);
+    //   }
+    // }
+    if (downloadState === 'list') {
+      for (let index = 0; index < pageJson.length; index++) {
+        const element = pageJson[index];
+        if (element.id == downloadID) {
+          console.log('ok',element.src)
+          const downloadSrc = await require(element.src);
+          console.log('src',downloadSrc);
+          if (downloadSrc.length) {
+            try {
+              const res = await downloadImage(downloadSrc, element.folderName);
+              console.log(res);
+              // if (res) {
+              //   // initPageNumber += 1;
+              //   down()
+              // }
+            } catch (error) {
+              // down();
+              console.log(error);
+            }
+          }else{
+            console.log('Warn:',element.src+'内容为空')
+          }
+          
+        }
       }
     }
   };

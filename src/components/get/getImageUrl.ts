@@ -1,7 +1,7 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-04 17:09:00
- * @LastEditTime: 2021-07-08 13:50:15
+ * @LastEditTime: 2021-07-13 17:10:39
  * @LastEditors: bowen
  * @Description: 获取图片地址
  * @FilePath: \demoExpress\src\components\get\getImageUrl.ts
@@ -64,8 +64,9 @@ module.exports = async function main(
       console.log(`开始更新数据到总目录`);
       const newJson = {
         id: parseInt(today.replace(/-/g, '') + page),
-        pageNumber: parseInt(page),
+        folderName: parseInt(today) + '第' + page + '页',
         src: `../output/${today}/wallpaper${page}.json`,
+        date:new Date().toLocaleString()
       };
       console.log(`Data:`, newJson);
       fs.readFile(
@@ -89,12 +90,12 @@ module.exports = async function main(
               (err: any) => {
                 if (err) throw err;
                 console.log('数据已被更新到文件');
-                callback(page+1);
+                callback(page + 1);
                 // isOver = true
               }
             );
           } else {
-            callback(page+1);
+            callback(page + 1);
           }
         }
       );
