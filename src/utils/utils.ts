@@ -1,7 +1,7 @@
 /*
  * @Author: bowen
  * @Date: 2021-06-04 16:47:36
- * @LastEditTime: 2021-06-07 11:09:34
+ * @LastEditTime: 2021-07-08 14:15:42
  * @LastEditors: bowen
  * @Description: 工具
  * @FilePath: \demoExpress\src\utils\utils.ts
@@ -65,4 +65,55 @@ function mkdir(dirName: string, path = 'images') {
 //     }
 //   );
 // }
-module.exports = { mkdir };
+/**
+ * @description: 初始化
+ * @param {string} 
+ * @return {*}
+ */
+function init() {
+  console.log('项目初始化中...');
+  fs.access(
+    `./output`,
+    fs.constants.F_OK,
+    (err: { code: string }) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          console.log('文件夹： output 不存在，正在创建文件夹');
+          fs.mkdir(
+            `./output`,
+            { recursive: true },
+            (err: any) => {
+              if (err) throw err;
+              console.log('文件夹 output 创建成功');
+            }
+          );
+        }
+      } else {
+        console.log('文件夹 output 已存在');
+      }
+    }
+  );
+  fs.access(
+    `./output/images/`,
+    fs.constants.F_OK,
+    (err: { code: string }) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          console.log('文件夹： images 不存在，正在创建文件夹');
+          fs.mkdir(
+            `./output/images/`,
+            { recursive: true },
+            (err: any) => {
+              if (err) throw err;
+              console.log('文件夹 images 创建成功');
+            }
+          );
+        }
+      } else {
+        console.log('文件夹 images 已存在');
+      }
+    }
+  );
+}
+
+module.exports = { mkdir,init };
